@@ -1,0 +1,17 @@
+body{
+    min-height:100vh;
+    overflow: hidden;
+}
+
+.content-wrapper{
+    overflow: hidden;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    display: flex;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
