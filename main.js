@@ -1,21 +1,5 @@
 import init, {World, Direction} from './pkg/snake_game.js'
 
-// async function init(){
-//     const data = await fetch('sum.wasm');
-//     const buffer = await data.arrayBuffer();
-//     const wasm = await WebAssembly.instantiate(buffer);
-//     debugger
-//     const sumFunction = wasm.instance.exports.sum;
-//     const wasmMemory = wasm.instance.exports.memory;
-//     const uint8Array = new Uint8Array(wasmMemory.buffer,0,13);
-//     const text = new TextDecoder().decode(uint8Array.buffer)
-//     console.log(text)
-//     const result = sumFunction(10, 100);
-//     console.log(result)
-// }
-// init();
-
-
 init().then((wasm) => {
     const CELL_SIZE = 22;
     const WORLD_WIDTH = 16;
@@ -52,6 +36,16 @@ init().then((wasm) => {
         })
     }
 
+    function drawRewardCell() {
+        const rewardCell = world.reward_cell()
+        const col = rewardCell % worldWidth;
+        const row = Math.floor(rewardCell / worldWidth);
+        ctx.beginPath();
+        ctx.fillStyle = 'red'
+        ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        ctx.stroke()
+    }
+
     document.addEventListener('keydown', (e) => {
         switch (e.key) {
             case 'ArrowLeft':
@@ -72,10 +66,11 @@ init().then((wasm) => {
     function paint() {
         drawWorld()
         drawSnake()
+        drawRewardCell()
     }
 
     function update() {
-        const fps = 8;
+        const fps = 10;
         setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             world.update()
