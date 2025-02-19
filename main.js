@@ -16,9 +16,9 @@ import init, {World, Direction} from './pkg/snake_game.js'
 // init();
 
 
-init().then(() => {
+init().then((wasm) => {
     const CELL_SIZE = 22;
-    const WORLD_WIDTH=16;
+    const WORLD_WIDTH = 16;
     const SNAKE_SPAWN_IDX = Date.now() % (WORLD_WIDTH * WORLD_WIDTH);
     const world = World.new(WORLD_WIDTH, SNAKE_SPAWN_IDX);
     const worldWidth = world.width();
@@ -40,13 +40,16 @@ init().then(() => {
         ctx.stroke();
     }
 
-    function drawSnake(){
-        const snakeIdx = world.snake_head_idx();
-        const col = snakeIdx % worldWidth;
-        const row = Math.floor(snakeIdx / worldWidth);
-        ctx.beginPath();
-        ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        ctx.stroke();
+    function drawSnake() {
+        const snake_cells = new Uint32Array(wasm.memory.buffer, world.snake_cells(), world.snake_length());
+        snake_cells.forEach((cellIdx, idx) => {
+            const col = cellIdx % worldWidth;
+            const row = Math.floor(cellIdx / worldWidth);
+            ctx.beginPath();
+            ctx.fillStyle = idx === 0 ? '#7878db' : '#000000'
+            ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            ctx.stroke();
+        })
     }
 
     document.addEventListener('keydown', (e) => {
@@ -66,19 +69,19 @@ init().then(() => {
         }
     })
 
-    function paint(){
+    function paint() {
         drawWorld()
         drawSnake()
     }
 
-    function update(){
+    function update() {
         const fps = 8;
-        setTimeout(()=>{
+        setTimeout(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             world.update()
             paint()
             requestAnimationFrame(update)
-        }, 1000/fps)
+        }, 1000 / fps)
     }
 
     paint()
